@@ -2,8 +2,7 @@
 
 これは Flask, Chart.js を使用して作成された、インタラクティブなポートフォリオサイトです。
 
-![スクリーンショット](https://via.placeholder.com/800x450.png?text=Portfolio+Screenshot)
-*(ここにアプリケーションのスクリーンショットを挿入してください)*
+Flaskの勉強用で作成。
 
 ## ✨ 主な機能
 
