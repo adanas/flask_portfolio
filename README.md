@@ -1,13 +1,59 @@
-# flask_portfolio
-ポートフォリオ（Flask勉強用）
+# Flask Portfolio
 
-## 環境構築
-https://qiita.com/Yu_Mochi/items/68f033e9364b8379ed49
+これは Flask, Chart.js を使用して作成された、インタラクティブなポートフォリオサイトです。
 
-https://qiita.com/Yu_Mochi/items/4fb5b87acdb3003e68db
+![スクリーンショット](https://via.placeholder.com/800x450.png?text=Portfolio+Screenshot)
+*(ここにアプリケーションのスクリーンショットを挿入してください)*
 
-## Usage
+## ✨ 主な機能
 
-> python app.py
+- **自己紹介**: プロフィール情報と画像を表示します。
+- **プロジェクト一覧**: 携わったプロジェクトをアコーディオン形式で表示します。
+- **技術スタックの可視化**: Chart.js を利用して、使用技術の割合を円グラフで表示します。
+- **インタラクティブなフィルタリング**:
+    - 円グラフのセクションをクリックすると、関連するプロジェクトがフィルタリングされます。
+    - 各プロジェクトの技術タグをクリックしても同様にフィルタリングできます。
+- **画像の拡大表示**: プロフィール画像をクリックするとモーダルウィンドウで拡大表示します。
 
-ブラウザで http://127.0.0.1:5001 にアクセス
+## 🛠️ 使用技術
+
+- **バックエンド**: Python, Flask
+- **フロントエンド**: HTML, CSS, JavaScript
+- **ライブラリ**: Chart.js, chartjs-plugin-datalabels
+
+## 🚀 セットアップと実行方法
+
+1.  **リポジトリをクローンします**
+    ```bash
+    git clone https://github.com/adanas/flask_portfolio.git
+    cd flask_portfolio
+    ```
+
+2.  **Pythonの仮想環境を作成して有効化します (推奨)**
+    ```bash
+    # Mac / Linux
+    python3 -m venv venv
+    source venv/bin/activate
+
+    # Windows
+    python -m venv venv
+    venv\Scripts\activate
+    ```
+
+3.  **必要なライブラリをインストールします**
+    `requirements.txt` ファイルを作成していない場合は、まず以下のコマンドで作成してください。
+    ```bash
+    pip install Flask
+    pip freeze > requirements.txt
+    ```
+    その後、ライブラリをインストールします。
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **アプリケーションを実行します**
+    ```bash
+    python app.py
+    ```
+
+5.  ブラウザで **http://127.0.0.1:5001** にアクセスしてください。
