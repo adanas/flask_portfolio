@@ -62,7 +62,8 @@ def index():
 
     profile = {
         'name': 'sanada_a',
-        'bio': 'SE。バスケとスノーボード、キャンプが好きです。たまにロードバイク。'
+        'bio': 'SE。バスケとスノーボード、キャンプが好きです。たまにロードバイク。',
+        'github_url': 'https://github.com/adanas/flask_portfolio'
     }
     return render_template('index.html', profile=profile, projects=projects, tech_colors=tech_colors)
 

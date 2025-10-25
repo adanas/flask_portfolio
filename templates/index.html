@@ -8,6 +8,9 @@
         <h3>
             {{ profile.name }}
             <img id="profile-image" src="{{ url_for('static', filename='images/profile.png') }}" alt="プロフィール画像" class="profile-icon">
+            <a href="{{ profile.github_url }}" target="_blank" rel="noopener noreferrer" class="social-icon" title="GitHub Profile">
+                <i class="fab fa-github"></i>
+            </a>
         </h3>
         <p>{{ profile.bio }}</p>
     </section>
@@ -155,6 +158,8 @@
       // 画像をクリックした時にモーダルを表示
       img.onclick = function(){
         modal.style.display = "block";
+        // Flexboxで中央寄せするために 'block' から 'flex' に変更
+        modal.style.display = "flex";
         modalImg.src = this.src;
       }
       
@@ -188,14 +193,17 @@
         accordions.forEach(accordion => {
             // 初期状態で展開するために高さを設定
             const panel = accordion.nextElementSibling;
-            panel.style.maxHeight = panel.scrollHeight + "px";
+            panel.classList.add('is-open');
+            // is-openでも高さが足りない場合があるので、動的に設定する
+            panel.style.maxHeight = panel.scrollHeight + "px"; 
 
             accordion.addEventListener('click', function() {
                 this.classList.toggle('collapsed');
                 const panel = this.nextElementSibling;
-                if (panel.style.maxHeight) {
+                panel.classList.toggle('is-open');
+                if (panel.style.maxHeight) { // 閉じるとき
                     panel.style.maxHeight = null; // 閉じる
-                } else {
+                } else { // 開くとき
                     panel.style.maxHeight = panel.scrollHeight + "px"; // 開く
                 } 
             });
