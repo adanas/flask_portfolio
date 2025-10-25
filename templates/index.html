@@ -1,0 +1,205 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ profile.name }}'s Portfolio{% endblock %}
+
+{% block content %}
+    <section id="profile">
+        <h2>自己紹介</h2>
+        <h3>
+            {{ profile.name }}
+            <img id="profile-image" src="{{ url_for('static', filename='images/profile.png') }}" alt="プロフィール画像" class="profile-icon">
+        </h3>
+        <p>{{ profile.bio }}</p>
+    </section>
+
+    <section id="skills-chart">
+        <h2>技術スタック概要</h2>
+        <p>技術スタックをクリックするとプロジェクトがフィルタされます</p>
+        <div style="width: 50%; max-width: 300px; margin: auto;">
+            <canvas id="techPieChart"></canvas>
+        </div>
+    </section>
+
+    <section id="projects">
+        <h2>携わったプロジェクト</h2>
+        <div id="filter-status"></div>
+        {% for project in projects %}
+            <div class="project-card" data-technologies="{{ project.technologies | join(',') }}">
+                {# 初期状態でアコーディオンが開いているように、collapsedクラスをつけない #}
+                <h3 class="accordion-trigger">
+                    {{ project.title }}
+                </h3>
+                <div class="accordion-panel">
+                    <p>{{ project.description }}</p>
+                    <p><strong>役割:</strong> {{ project.role }}</p>
+                    <p><strong>使用技術:</strong>
+                        <div class="technology-tags">
+                            {% for tech in project.technologies %}
+                                {% set color = tech_colors.get(tech.lower(), tech_colors.default) %}
+                                <span class="technology-tag" style="background-color: {{ color }};">{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                    </p>
+                </div>
+            </div>
+        {% else %}
+            <p>プロジェクトはまだありません。</p>
+        {% endfor %}
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script>
+        // プロジェクトデータと色データをJinja2からJavaScriptに渡す
+        const projectsData = {{ projects | tojson }};
+        const techColors = {{ tech_colors | tojson }};
+
+        // 技術ごとの使用回数をカウント
+        const techCounts = projectsData.reduce((acc, project) => {
+            project.technologies.forEach(tech => {
+                acc[tech] = (acc[tech] || 0) + 1;
+            });
+            return acc;
+        }, {});
+
+        const labels = Object.keys(techCounts);
+        const data = Object.values(techCounts);
+        const backgroundColors = labels.map(tech => techColors[tech.toLowerCase()] || techColors.default);
+
+        // プラグインをChart.jsに登録
+        Chart.register(ChartDataLabels);
+
+        // フィルタリングの状態を管理するSet
+        const activeFilters = new Set();
+
+        // フィルタを更新し、表示を再描画する関数
+        function updateFiltersAndDisplay(selectedTech) {
+            const projectCards = document.querySelectorAll('.project-card');
+            const filterStatus = document.getElementById('filter-status');
+
+            // フィルタに技術を追加または削除
+            if (activeFilters.has(selectedTech)) {
+                activeFilters.delete(selectedTech);
+            } else {
+                activeFilters.add(selectedTech);
+            }
+
+            // フィルタを適用
+            if (activeFilters.size > 0) {
+                projectCards.forEach(card => {
+                    const cardTechs = card.dataset.technologies.split(',');
+                    // activeFiltersのいずれかの技術がカードに含まれているかチェック
+                    const isVisible = Array.from(activeFilters).some(filterTech => cardTechs.includes(filterTech));
+                    card.style.display = isVisible ? 'block' : 'none';
+                });
+
+                // フィルタ状況の表示を更新
+                let statusHTML = 'フィルタ中: ';
+                activeFilters.forEach(tech => {
+                    const techColor = techColors[tech.toLowerCase()] || techColors.default;
+                    statusHTML += `<span class="technology-tag" style="background-color: ${techColor};">${tech}</span>`;
+                });
+                statusHTML += `<span class="clear-filter">(すべて解除)</span>`;
+                filterStatus.innerHTML = statusHTML;
+
+            } else {
+                // フィルタが0になった場合、すべて表示
+                projectCards.forEach(card => card.style.display = 'block');
+                filterStatus.innerHTML = '';
+            }
+        }
+
+        // Chart.jsで円グラフを描画
+        const ctx = document.getElementById('techPieChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: { labels, datasets: [{ data, backgroundColor: backgroundColors }] },
+            options: {
+                onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                        const clickedIndex = elements[0].index;
+                        const selectedTech = event.chart.data.labels[clickedIndex];
+                        updateFiltersAndDisplay(selectedTech);
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false // 凡例を非表示にする
+                    },
+                    datalabels: {
+                        formatter: (value, ctx) => {
+                            return ctx.chart.data.labels[ctx.dataIndex];
+                        },
+                        color: '#fff',
+                        font: { weight: 'bold' }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- 画像拡大用のモーダル -->
+    <div id="imageModal" class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+      // モーダル要素を取得
+      var modal = document.getElementById("imageModal");
+      var img = document.getElementById("profile-image");
+      var modalImg = document.getElementById("modalImage");
+      
+      // 画像をクリックした時にモーダルを表示
+      img.onclick = function(){
+        modal.style.display = "block";
+        modalImg.src = this.src;
+      }
+      
+      // 閉じるボタン(x)をクリックした時にモーダルを非表示
+      var span = document.getElementsByClassName("close")[0];
+      span.onclick = function() { 
+        modal.style.display = "none";
+      }
+
+      // --- アコーディオンの処理 ---
+      document.addEventListener('DOMContentLoaded', function () {
+        // フィルター解除ボタンのイベントリスナー
+        document.getElementById('filter-status').addEventListener('click', function(e) {
+            if (e.target.classList.contains('clear-filter')) {
+                document.querySelectorAll('.project-card').forEach(card => card.style.display = 'block');
+                activeFilters.clear(); // フィルタセットをクリア
+                document.getElementById('filter-status').innerHTML = ''; // 表示をクリア
+            }
+        });
+
+        // プロジェクトカード内の技術タグクリックでフィルタ
+        document.getElementById('projects').addEventListener('click', function(e) {
+            if (e.target.classList.contains('technology-tag')) {
+                const selectedTech = e.target.textContent;
+                updateFiltersAndDisplay(selectedTech);
+            }
+        });
+
+        const accordions = document.querySelectorAll('.accordion-trigger');
+
+        accordions.forEach(accordion => {
+            // 初期状態で展開するために高さを設定
+            const panel = accordion.nextElementSibling;
+            panel.style.maxHeight = panel.scrollHeight + "px";
+
+            accordion.addEventListener('click', function() {
+                this.classList.toggle('collapsed');
+                const panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null; // 閉じる
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px"; // 開く
+                } 
+            });
+        });
+      });
+    </script>
+{% endblock %}
