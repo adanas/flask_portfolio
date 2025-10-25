@@ -6,8 +6,8 @@
     <section id="profile">
         <h2>自己紹介</h2>
         <h3>
-            {{ profile.name }}
             <img id="profile-image" src="{{ url_for('static', filename='images/profile.png') }}" alt="プロフィール画像" class="profile-icon">
+            {{ profile.name }}
             <a href="{{ profile.github_url }}" target="_blank" rel="noopener noreferrer" class="social-icon" title="GitHub Profile">
                 <i class="fab fa-github"></i>
             </a>

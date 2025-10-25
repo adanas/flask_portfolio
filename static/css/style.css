@@ -102,10 +102,10 @@ section#profile h3 {
 }
 
 .profile-icon {
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    margin-left: 15px;
+    margin-right: 20px;
     object-fit: cover;
     cursor: pointer;
     transition: opacity 0.3s;
@@ -187,13 +187,18 @@ section#profile h3 {
 .social-icon {
     display: inline-flex; /* アイコンを中央揃えにするため */
     align-items: center;
-    margin-left: 10px; /* 少しだけ間隔を詰める */
-    color: #333;
+    justify-content: center; /* 水平方向にも中央揃え */
+    width: 28px;             /* 幅を固定 (70%に縮小) */
+    height: 28px;            /* 高さを固定 (70%に縮小) */
+    margin-left: 15px;
+    background-color: #333;  /* 背景色を黒に */
+    color: #fff;             /* アイコンの色を白に */
     text-decoration: none;
-    transition: color 0.3s;
-    font-size: 40px; /* アイコンの見た目の大きさを調整 */
+    transition: background-color 0.3s;
+    font-size: 17px; /* ボックス内のアイコンサイズを調整 (70%に縮小) */
+    border-radius: 4px;      /* 少しだけ角を丸くする */
 }
 
 .social-icon:hover {
-    color: #555;
+    background-color: #555; /* ホバー時に背景色を少し明るく */
 }
