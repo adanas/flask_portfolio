@@ -33,6 +33,16 @@ header, footer {
     padding: 1rem 0;
 }
 
+footer p {
+    margin: 0;
+    padding: 2px 0;
+}
+
+footer .tech-credit {
+    font-size: 0.8em;
+    color: #aaa;
+}
+
 section {
     margin-bottom: 2rem;
 }
